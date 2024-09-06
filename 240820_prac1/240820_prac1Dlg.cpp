@@ -293,3 +293,4 @@ void CMy240820prac1Dlg::OnBnClickedRadio4()
 	m_ListCtrl.InsertItem(num, str);
 	m_ListCtrl.SetItem(num, 1, LVIF_TEXT, _T("4"), NULL, NULL, NULL, NULL);
 }
+
