@@ -64,6 +64,8 @@ void Cslider0819Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER2, m_slider2);
 	DDX_Control(pDX, IDC_SLIDER3, m_slider3);
 	DDX_Control(pDX, IDC_LISTCTRL, m_ListCtrl);
+	DDX_Control(pDX, IDC_CHECK1, m_chk1);
+	DDX_Control(pDX, IDC_CHECK2, m_chk2);
 }
 
 BEGIN_MESSAGE_MAP(Cslider0819Dlg, CDialogEx)
@@ -78,6 +80,8 @@ BEGIN_MESSAGE_MAP(Cslider0819Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_LISTCTRL_DEL, &Cslider0819Dlg::OnBnClickedListctrlDel)
 	//ON_NOTIFY(NM_CLICK, IDC_LISTCTRL, &Cslider0819Dlg::OnNMClickListctrl)
 	ON_EN_CHANGE(IDC_EDIT1, &Cslider0819Dlg::OnEnChangeEdit1)
+	ON_NOTIFY(NM_CLICK, IDC_LISTCTRL, &Cslider0819Dlg::OnNMClickListctrl)
+	ON_STN_CLICKED(IDC_STATIC_rgb1, &Cslider0819Dlg::OnStnClickedStaticrgb1)
 END_MESSAGE_MAP()
 
 
@@ -136,11 +140,12 @@ BOOL Cslider0819Dlg::OnInitDialog()
 	m_ListCtrl.GetWindowRect(&rt);
 	m_ListCtrl.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
-	m_ListCtrl.InsertColumn(0, TEXT("RED"), LVCFMT_LEFT, rt.Width() * 0.25);
-	m_ListCtrl.InsertColumn(1, TEXT("GREEN"), LVCFMT_CENTER, rt.Width() * 0.25);
-	m_ListCtrl.InsertColumn(2, TEXT("BLUE"), LVCFMT_CENTER, rt.Width() * 0.25);
-	m_ListCtrl.InsertColumn(3, TEXT("COLOR"), LVCFMT_CENTER, rt.Width() * 0.25);
-
+	m_ListCtrl.InsertColumn(0, TEXT("순번"), LVCFMT_LEFT, rt.Width() * 0.15);
+	m_ListCtrl.InsertColumn(1, TEXT("RED"), LVCFMT_CENTER, rt.Width() * 0.15);
+	m_ListCtrl.InsertColumn(2, TEXT("GREEN"), LVCFMT_CENTER, rt.Width() * 0.15);
+	m_ListCtrl.InsertColumn(3, TEXT("BLUE"), LVCFMT_CENTER, rt.Width() * 0.15);
+	m_ListCtrl.InsertColumn(4, TEXT("chk1"), LVCFMT_CENTER, rt.Width() * 0.15);
+	m_ListCtrl.InsertColumn(5, TEXT("chk2"), LVCFMT_CENTER, rt.Width() * 0.15);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -191,6 +196,13 @@ void Cslider0819Dlg::OnPaint()
 		pSRGB->GetClientRect(rect);
 		rgbdc.FillSolidRect(rect, m_cRGB);
 		pSRGB->ValidateRect(rect);
+
+		CRect rect2;
+		CClientDC rgbdc2(GetDlgItem(IDC_STATIC_rgb2));
+		CStatic* pSRGB2 = (CStatic*)GetDlgItem(IDC_STATIC_rgb2);
+		pSRGB2->GetClientRect(rect2);
+		rgbdc2.FillSolidRect(rect2, m_cRGB2);
+		pSRGB2->ValidateRect(rect2);
 	}
 }
 
@@ -288,9 +300,9 @@ void Cslider0819Dlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		pos2.Format(_T("%d"), position2);
 		pos3.Format(_T("%d"), position3);
 
-		m_ListCtrl.SetItem(clickidx, 0, LVIF_TEXT, pos1, NULL, NULL, NULL, NULL);
-		m_ListCtrl.SetItem(clickidx, 1, LVIF_TEXT, pos2, NULL, NULL, NULL, NULL);
-		m_ListCtrl.SetItem(clickidx, 2, LVIF_TEXT, pos3, NULL, NULL, NULL, NULL);
+		m_ListCtrl.SetItem(clickidx, 1, LVIF_TEXT, pos1, NULL, NULL, NULL, NULL);
+		m_ListCtrl.SetItem(clickidx, 2, LVIF_TEXT, pos2, NULL, NULL, NULL, NULL);
+		m_ListCtrl.SetItem(clickidx, 3, LVIF_TEXT, pos3, NULL, NULL, NULL, NULL);
 	}
 		
 	CRect rect;
@@ -332,14 +344,33 @@ void Cslider0819Dlg::OnBnClickedListctrlAdd()
 	pos3.Format(_T("%d"), position3);
 
 	int num = m_ListCtrl.GetItemCount();
-	m_ListCtrl.InsertItem(num, pos1);
-	m_ListCtrl.SetItem(num, 1, LVIF_TEXT, pos2, NULL, NULL, NULL, NULL);
-	m_ListCtrl.SetItem(num, 2, LVIF_TEXT, pos3, NULL, NULL, NULL, NULL);
-
 	CString str;
-	GetDlgItemTextW(IDC_LISTCTRL_EDIT, str);
+	str.Format(_T("%d"), num);
+	m_ListCtrl.InsertItem(num, str);
+	m_ListCtrl.SetItem(num, 1, LVIF_TEXT, pos1, NULL, NULL, NULL, NULL);
+	m_ListCtrl.SetItem(num, 2, LVIF_TEXT, pos2, NULL, NULL, NULL, NULL);
+	m_ListCtrl.SetItem(num, 3, LVIF_TEXT, pos3, NULL, NULL, NULL, NULL);
 
-	m_ListCtrl.SetItem(num, 3, LVIF_TEXT, str, NULL, NULL, NULL, NULL);
+	bool chk1 = 0, chk2 = 0;
+	
+	chk1 = m_chk1.GetCheck();
+	chk2 = m_chk2.GetCheck();
+	CString y = _T("Y"), n = _T("N");
+
+	if (chk1 == 1) {
+		m_ListCtrl.SetItem(num, 4, LVIF_TEXT, y, NULL, NULL, NULL, NULL);
+	}
+	else {
+		m_ListCtrl.SetItem(num, 4, LVIF_TEXT, n, NULL, NULL, NULL, NULL);
+	}
+
+	if (chk2 == 1) {
+		m_ListCtrl.SetItem(num, 5, LVIF_TEXT, y, NULL, NULL, NULL, NULL);
+	}
+	else {
+		m_ListCtrl.SetItem(num, 5, LVIF_TEXT, n, NULL, NULL, NULL, NULL);
+	}
+
 }
 
 
@@ -390,4 +421,41 @@ void Cslider0819Dlg::OnEnChangeEdit1()
 	// 이 알림 메시지를 보내지 않습니다.
 
 	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void Cslider0819Dlg::OnNMClickListctrl(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	int clickidx = m_ListCtrl.GetSelectionMark();
+	
+	if (clickidx == -1) {
+		*pResult = 0;
+	}
+
+	CString R=m_ListCtrl.GetItemText(clickidx, 1);
+	CString G = m_ListCtrl.GetItemText(clickidx, 2);
+	CString B = m_ListCtrl.GetItemText(clickidx, 3);
+
+	int Red = _ttoi(R);
+	int Green = _ttoi(G);
+	int Blue = _ttoi(B);
+
+	CRect rect;
+	GetDlgItem(IDC_STATIC_rgb2)->GetWindowRect(&rect);
+	ScreenToClient(&rect);
+
+	m_cRGB2 = RGB(Red, Green, Blue);
+	UpdateData(FALSE);
+	InvalidateRect(&rect);
+
+	*pResult = 0;
+}
+
+
+void Cslider0819Dlg::OnStnClickedStaticrgb1()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

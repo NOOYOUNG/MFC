@@ -45,4 +45,9 @@ public:
 	afx_msg void OnBnClickedListctrlDel();
 //	afx_msg void OnNMClickListctrl(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEnChangeEdit1();
+	afx_msg void OnNMClickListctrl(NMHDR* pNMHDR, LRESULT* pResult);
+	COLORREF m_cRGB2;
+	afx_msg void OnStnClickedStaticrgb1();
+	CButton m_chk1;
+	CButton m_chk2;
 };
