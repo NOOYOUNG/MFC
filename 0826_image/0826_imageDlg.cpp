@@ -248,4 +248,5 @@ void CMy0826imageDlg::OnBnClickedButton2()
 	image.Draw(pDC->GetSafeHdc(), 0, 0, rect.Width(), rect.Height());
 
 	m_picture.ReleaseDC(pDC);
+
 }
